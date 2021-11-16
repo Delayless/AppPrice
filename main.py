@@ -16,37 +16,37 @@ def get_key_info(url):
     html=requests.get(url,headers=header)
     #beautifulsoup解析网址
     soup = BeautifulSoup(html.content,'lxml')
-    appTitle = soup.find_all("title")
-    appPrice = soup.find_all('li', attrs={'class': re.compile(r"inline-list__item inline-list__item--bulleted app-header__list__item--price")})
-    hasInAppPurchase = soup.find_all('li', attrs={'class': re.compile(r"inline-list__item inline-list__item--bulleted app-header__list__item--in-app-purchase")})
-    inAppPurchaseTitle = soup.find_all('span', attrs={'class': re.compile(r"truncate-single-line truncate-single-line--block")})
-    inAppPurchasePrice = soup.find_all('span', attrs={'class': re.compile(r"list-with-numbers__item__price small-hide medium-show-tablecell")})
+    appTitleBlock = soup.find_all("title")
+    appPriceBlock = soup.find_all('li', attrs={'class': re.compile(r"inline-list__item inline-list__item--bulleted app-header__list__item--price")})
+    # hasInAppPurchase = soup.find_all('li', attrs={'class': re.compile(r"inline-list__item inline-list__item--bulleted app-header__list__item--in-app-purchase")})
+    inAppPurchaseTitleBlock = soup.find_all('span', attrs={'class': re.compile(r"truncate-single-line truncate-single-line--block")})
+    inAppPurchasePriceBlock = soup.find_all('span', attrs={'class': re.compile(r"list-with-numbers__item__price small-hide medium-show-tablecell")})
 
-    # data1=[(comment_time_list[jj].string,
-    #     use_name_list[jj].a.string,
-    #     comment_list[jj].string,
-    #     rating_list[jj].get('class')[0],
-    #     rating_list[jj].get('title'))]
-    # data2 = pd.DataFrame(data1)
-    # data2.to_csv('douban_movie1.csv', header=False, index=False, mode='a+',encoding="utf-8-sig")
-    print(appTitle[0].string)
-    print(appPrice[0].string)
+    # 提取App名字
+    appName = appTitleBlock[0].text.replace("\u200eApp\xa0Store 上的", "").replace('“', '').replace('”', '')
+    appPrice = appPriceBlock[0].text.replace("¥", "")
+    appInfo = (appName, appPrice)
     try:
-        print(hasInAppPurchase[0].text)
-        for i in range(len(inAppPurchaseTitle)):
-            print(inAppPurchaseTitle[i].text)
-            print(inAppPurchasePrice[i].text)
-    except AttributeError:
-        print("无内购应用!")
+        for i in range(len(inAppPurchaseTitleBlock)):
+            inAppPurchasePrice = inAppPurchasePriceBlock[i].text.replace("¥", "")
+            inAppPurchaseTitle = inAppPurchaseTitleBlock[i].text
+            appInfo = appInfo + (inAppPurchaseTitle,)
+            appInfo = appInfo + ("￥" + inAppPurchasePrice,)
+        return [appInfo]
+    except:
+        # print("无内购应用!")
+        appInfo = appInfo + ("无内购应用!",)
+        return [appInfo]
 
 
-
-# url = 'https://apps.apple.com/cn/app/id1459749978' # List背单词
-url = 'https://apps.apple.com/cn/app/id1348317163' # marginnote
+url = 'https://apps.apple.com/cn/app/id1459749978' # List背单词
+# url = 'https://apps.apple.com/cn/app/id1348317163' # marginnote
 # url = 'https://apps.apple.com/cn/app/id535886823' # chrome
 while True:
     try:
-        get_key_info(url)
+        info = get_key_info(url)
+        data2 = pd.DataFrame(info)
+        data2.to_csv('appPrice.csv', header=False, index=False, mode='a+',encoding="utf-8-sig")
         break
     except:
         time.sleep(2)
