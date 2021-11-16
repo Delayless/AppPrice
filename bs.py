@@ -20,18 +20,19 @@ def get_key_info(url):
     appTitle = soup.select_one("title")
     appPrice = soup.find('li', attrs={'class': re.compile(r"inline-list__item inline-list__item--bulleted app-header__list__item--price")})
     hasInAppPurchase = soup.find('li', attrs={'class': re.compile(r"inline-list__item inline-list__item--bulleted app-header__list__item--in-app-purchase")})
-    inAppPurchaseTitle = soup.find('span', attrs={'class': re.compile(r"truncate-single-line truncate-single-line--block")})
-    inAppPurchasePrice = soup.find('span', attrs={'class': re.compile(r"list-with-numbers__item__price small-hide medium-show-tablecell")})
+    inAppPurchaseTitle = soup.find_all('span', attrs={'class': re.compile(r"truncate-single-line truncate-single-line--block")})
+    inAppPurchasePrice = soup.find_all('span', attrs={'class': re.compile(r"list-with-numbers__item__price small-hide medium-show-tablecell")})
     # inAppPurchasePrice = soup.select_one("span.list-with-numbers__item__title")
     print(appTitle.text)
     print(appPrice.text)
     print(hasInAppPurchase.text)
-    print(inAppPurchaseTitle.text)
-    print(inAppPurchasePrice.text)
+    for i in range(len(inAppPurchaseTitle)):
+        print(inAppPurchaseTitle[i].text)
+        print(inAppPurchasePrice[i].text)
 
 
 
 # url = 'https://apps.apple.com/cn/app/id1459749978'
 # url = 'https://apps.apple.com/cn/app/id1462751886' # hplayer
-url = 'https://apps.apple.com/us/app/marginnote-3/id1348317163'
+url = 'https://apps.apple.com/cn/app/id1348317163' # marginnote
 get_key_info(url)
