@@ -18,20 +18,22 @@ def get_key_info(url):
     soup = BeautifulSoup(html.content,'lxml')
     appTitleBlock = soup.find_all("title")
     appPriceBlock = soup.find_all('li', attrs={'class': re.compile(r"inline-list__item inline-list__item--bulleted app-header__list__item--price")})
-    # hasInAppPurchase = soup.find_all('li', attrs={'class': re.compile(r"inline-list__item inline-list__item--bulleted app-header__list__item--in-app-purchase")})
+    hasInAppPurchaseBlock = soup.find_all('li', attrs={'class': re.compile(r"inline-list__item inline-list__item--bulleted app-header__list__item--in-app-purchase")})
     inAppPurchaseTitleBlock = soup.find_all('span', attrs={'class': re.compile(r"truncate-single-line truncate-single-line--block")})
     inAppPurchasePriceBlock = soup.find_all('span', attrs={'class': re.compile(r"list-with-numbers__item__price small-hide medium-show-tablecell")})
 
     # 提取App名字
     appName = appTitleBlock[0].text.replace("\u200eApp\xa0Store 上的", "").replace('“', '').replace('”', '')
     appPrice = appPriceBlock[0].text.replace("¥", "")
-    appInfo = (appName, appPrice)
+    print(appName)
+    appInfo = (appName + ": ￥" + appPrice,)
     try:
+        # 下面这条语句是为了在没有内购时抛出异常
+        print(hasInAppPurchaseBlock[0].text)
         for i in range(len(inAppPurchaseTitleBlock)):
             inAppPurchasePrice = inAppPurchasePriceBlock[i].text.replace("¥", "")
             inAppPurchaseTitle = inAppPurchaseTitleBlock[i].text
-            appInfo = appInfo + (inAppPurchaseTitle,)
-            appInfo = appInfo + ("￥" + inAppPurchasePrice,)
+            appInfo = appInfo + (inAppPurchaseTitle + ": ￥" + inAppPurchasePrice,)
         return [appInfo]
     except:
         # print("无内购应用!")
@@ -39,14 +41,19 @@ def get_key_info(url):
         return [appInfo]
 
 
-url = 'https://apps.apple.com/cn/app/id1459749978' # List背单词
+# url = 'https://apps.apple.com/cn/app/  id1459749978' # List背单词
 # url = 'https://apps.apple.com/cn/app/id1348317163' # marginnote
 # url = 'https://apps.apple.com/cn/app/id535886823' # chrome
-while True:
-    try:
-        info = get_key_info(url)
-        data2 = pd.DataFrame(info)
-        data2.to_csv('appPrice.csv', header=False, index=False, mode='a+',encoding="utf-8-sig")
-        break
-    except:
-        time.sleep(2)
+apps = ["id1459749978", "id1348317163", "id535886823"]
+for item in apps:
+    url = 'https://apps.apple.com/cn/app/'+item
+    print(url)
+    while True:
+        try:
+            info = get_key_info(url)
+            print(info)
+            data2 = pd.DataFrame(info)
+            data2.to_csv('appPrice.csv', header=False, index=False, mode='a+',encoding="utf-8-sig")
+            break
+        except:
+            time.sleep(2)
