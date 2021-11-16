@@ -27,21 +27,17 @@ def get_key_info(url):
     appPrice = appPriceBlock[0].text.replace("¥", "")
     print(appName)
     appInfo = (appName + ": ￥" + appPrice,)
-    try:
-        # 下面这条语句是为了在没有内购时抛出异常
-        print(hasInAppPurchaseBlock[0].text)
-        for i in range(len(inAppPurchaseTitleBlock)):
-            inAppPurchasePrice = inAppPurchasePriceBlock[i].text.replace("¥", "")
-            inAppPurchaseTitle = inAppPurchaseTitleBlock[i].text
-            appInfo = appInfo + (inAppPurchaseTitle + ": ￥" + inAppPurchasePrice,)
+    if (len(inAppPurchaseTitleBlock) == 0):
+        appInfo = appInfo + (("无内购应用!"),)
         return [appInfo]
-    except:
-        # print("无内购应用!")
-        appInfo = appInfo + ("无内购应用!",)
-        return [appInfo]
+    for i in range(len(inAppPurchaseTitleBlock)):
+        inAppPurchasePrice = inAppPurchasePriceBlock[i].text.replace("¥", "")
+        inAppPurchaseTitle = inAppPurchaseTitleBlock[i].text
+        appInfo = appInfo + (inAppPurchaseTitle + ": ￥" + inAppPurchasePrice,)
+    return [appInfo]
 
 
-# url = 'https://apps.apple.com/cn/app/  id1459749978' # List背单词
+# url = 'https://apps.apple.com/cn/app/id1459749978' # List背单词
 # url = 'https://apps.apple.com/cn/app/id1348317163' # marginnote
 # url = 'https://apps.apple.com/cn/app/id535886823' # chrome
 apps = ["id1459749978", "id1348317163", "id535886823"]
