@@ -7,10 +7,9 @@ from bs4 import BeautifulSoup
 
 def get_key_info(url):
     header = {
-            'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+            'accept': 'text/html,application/xhtml+xml,application/xml',
             'accept-encoding': 'gzip, deflate, br',
             'accept-language': 'zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7',
-            'cache-control': 'no-cache',
             'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36'
             }
     #request请求
@@ -25,14 +24,22 @@ def get_key_info(url):
     # inAppPurchasePrice = soup.select_one("span.list-with-numbers__item__title")
     print(appTitle.text)
     print(appPrice.text)
-    print(hasInAppPurchase.text)
-    for i in range(len(inAppPurchaseTitle)):
-        print(inAppPurchaseTitle[i].text)
-        print(inAppPurchasePrice[i].text)
+    try:
+        print(hasInAppPurchase.text)
+        for i in range(len(inAppPurchaseTitle)):
+            print(inAppPurchaseTitle[i].text)
+            print(inAppPurchasePrice[i].text)
+    except AttributeError:
+        print("无内购应用!")
 
 
 
-# url = 'https://apps.apple.com/cn/app/id1459749978'
-# url = 'https://apps.apple.com/cn/app/id1462751886' # hplayer
+# url = 'https://apps.apple.com/cn/app/id1459749978' # List背单词
 url = 'https://apps.apple.com/cn/app/id1348317163' # marginnote
-get_key_info(url)
+# url = 'https://apps.apple.com/cn/app/id535886823' # chrome
+while True:
+    try:
+        get_key_info(url)
+        break
+    except:
+        time.sleep(2)
