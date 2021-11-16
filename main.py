@@ -16,16 +16,23 @@ def get_key_info(url):
     html=requests.get(url,headers=header)
     #beautifulsoup解析网址
     soup = BeautifulSoup(html.content,'lxml')
-    appTitle = soup.select_one("title")
-    appPrice = soup.find('li', attrs={'class': re.compile(r"inline-list__item inline-list__item--bulleted app-header__list__item--price")})
-    hasInAppPurchase = soup.find('li', attrs={'class': re.compile(r"inline-list__item inline-list__item--bulleted app-header__list__item--in-app-purchase")})
+    appTitle = soup.find_all("title")
+    appPrice = soup.find_all('li', attrs={'class': re.compile(r"inline-list__item inline-list__item--bulleted app-header__list__item--price")})
+    hasInAppPurchase = soup.find_all('li', attrs={'class': re.compile(r"inline-list__item inline-list__item--bulleted app-header__list__item--in-app-purchase")})
     inAppPurchaseTitle = soup.find_all('span', attrs={'class': re.compile(r"truncate-single-line truncate-single-line--block")})
     inAppPurchasePrice = soup.find_all('span', attrs={'class': re.compile(r"list-with-numbers__item__price small-hide medium-show-tablecell")})
-    # inAppPurchasePrice = soup.select_one("span.list-with-numbers__item__title")
-    print(appTitle.text)
-    print(appPrice.text)
+
+    # data1=[(comment_time_list[jj].string,
+    #     use_name_list[jj].a.string,
+    #     comment_list[jj].string,
+    #     rating_list[jj].get('class')[0],
+    #     rating_list[jj].get('title'))]
+    # data2 = pd.DataFrame(data1)
+    # data2.to_csv('douban_movie1.csv', header=False, index=False, mode='a+',encoding="utf-8-sig")
+    print(appTitle[0].string)
+    print(appPrice[0].string)
     try:
-        print(hasInAppPurchase.text)
+        print(hasInAppPurchase[0].text)
         for i in range(len(inAppPurchaseTitle)):
             print(inAppPurchaseTitle[i].text)
             print(inAppPurchasePrice[i].text)
